@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Route Optimization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            padding: 2rem;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        input, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dynamic Route Optimization</h1>
+    </header>
+    <main>
+        <div class="form-container">
+            <form id="routeForm">
+                <label for="origin">Origin:</label>
+                <input type="text" id="origin" name="origin" placeholder="Enter starting point">
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" name="destination" placeholder="Enter destination">
+                <label for="fuel_efficiency">Fuel Efficiency (L/km):</label>
+                <input type="number" id="fuel_efficiency" name="fuel_efficiency" step="0.01" placeholder="e.g., 0.12">
+                <button type="button" onclick="submitForm()">Optimize Route</button>
+            </form>
+            <div id="results" style="margin-top: 1rem;"></div>
+        </div>
+    </main>
+    <script>
+        async function submitForm() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const fuelEfficiency = document.getElementById('fuel_efficiency').value;
+
+            const response = await fetch('/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ origin, destination, fuel_efficiency: fuelEfficiency })
+            });
+
+            const data = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h2>Optimization Results</h2>
+                <p><strong>Route Distance:</strong> ${(data.route.route.routes[0].distance / 1000).toFixed(2)} km</p>
+                <p><strong>Estimated Emissions:</strong> ${data.emissions.toFixed(2)} kg CO2</p>
+            `;
+        }
+    </script>
+</body>
+</html>
